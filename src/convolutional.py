@@ -9,7 +9,7 @@ def set_convolutional(X, W, b, stride, bn_beta, bn_gamma, bn_mm, bn_mv, filtergr
         # W = tf.get_variable("W", W.shape, trainable=False, initializer=tf.constant_initializer(W))
         # b = tf.get_variable("b", b.shape, trainable=False, initializer=tf.constant_initializer(b))
         W = tf.get_variable("W", W.shape, trainable=True, initializer = tf.random_normal_initializer(mean=0, stddev=0.001))
-        b = tf.get_variable("b", b.shape(), trainable=True, initializer = tf.random_normal_initializer(mean =0, stddev=0.1))
+        b = tf.get_variable("b", b.shape, trainable=True, initializer = tf.random_normal_initializer(mean =0, stddev=0.1))
 
         if filtergroup:
             X0, X1 = tf.split(X, 2, 3)
