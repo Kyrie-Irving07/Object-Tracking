@@ -67,43 +67,17 @@ def build_tracking_graph(final_score_sz, design, env):
 
 
 # import pretrained Siamese network from matconvnet
-def _create_siamese(net_path, net_x, net_z):
-    # read mat file from net_path and start TF Siamese graph from placeholders X and Z
-    params_names_list, params_values_list = _import_from_matconvnet(net_path)
-
+def _create_siamese(net_path, net_x, net_z, istrain):
     # loop through the flag arrays and re-construct network, reading parameters of conv and bnorm layers
     for i in range(_num_layers):
         print( '> Layer '+str(i+1))
-        # conv
-        conv_W_name = _find_params('conv'+str(i+1)+'f', params_names_list)[0]
-        conv_b_name = _find_params('conv'+str(i+1)+'b', params_names_list)[0]
-        print( '\t\tCONV: setting '+conv_W_name+' '+conv_b_name)
-        print( '\t\tCONV: stride '+str(_conv_stride[i])+', filter-group '+str(_filtergroup_yn[i]))
-        conv_W = params_values_list[params_names_list.index(conv_W_name)]
-        conv_b = params_values_list[params_names_list.index(conv_b_name)]
-        # batchnorm
-        if _bnorm_yn[i]:
-            bn_beta_name = _find_params('bn'+str(i+1)+'b', params_names_list)[0]
-            bn_gamma_name = _find_params('bn'+str(i+1)+'m', params_names_list)[0]
-            bn_moments_name = _find_params('bn'+str(i+1)+'x', params_names_list)[0]
-            print( '\t\tBNORM: setting '+bn_beta_name+' '+bn_gamma_name+' '+bn_moments_name)
-            bn_beta = params_values_list[params_names_list.index(bn_beta_name)]
-            bn_gamma = params_values_list[params_names_list.index(bn_gamma_name)]
-            bn_moments = params_values_list[params_names_list.index(bn_moments_name)]
-            bn_moving_mean = bn_moments[:,0]
-            bn_moving_variance = bn_moments[:,1]**2 # saved as std in matconvnet
-        else:
-            bn_beta = bn_gamma = bn_moving_mean = bn_moving_variance = []
-        
         # set up conv "block" with bnorm and activation 
-        net_x = set_convolutional(net_x, conv_W, np.swapaxes(conv_b,0,1), _conv_stride[i], \
-                            bn_beta, bn_gamma, bn_moving_mean, bn_moving_variance, \
+        net_x = set_convolutional(net_x, conv_W, np.swapaxes(conv_b,0,1), _conv_stride[i], istrain=istrain, \
                             filtergroup=_filtergroup_yn[i], batchnorm=_bnorm_yn[i], activation=_relu_yn[i], \
                             scope='conv'+str(i+1), reuse=False)
         
         # notice reuse=True for Siamese parameters sharing
-        net_z = set_convolutional(net_z, conv_W, np.swapaxes(conv_b,0,1), _conv_stride[i], \
-                            bn_beta, bn_gamma, bn_moving_mean, bn_moving_variance, \
+        net_z = set_convolutional(net_z, conv_W, np.swapaxes(conv_b,0,1), _conv_stride[i], istrain=istrain, \
                             filtergroup=_filtergroup_yn[i], batchnorm=_bnorm_yn[i], activation=_relu_yn[i], \
                             scope='conv'+str(i+1), reuse=True)    
         
@@ -117,28 +91,7 @@ def _create_siamese(net_path, net_x, net_z):
 
     return net_z, net_x, params_names_list, params_values_list
 
-
-def _import_from_matconvnet(net_path):
-    mat = scipy.io.loadmat(net_path)
-    net_dot_mat = mat.get('net')
-    # organize parameters to import
-    params = net_dot_mat['params']
-    params = params[0][0]
-    params_names = params['name'][0]
-    params_names_list = [params_names[p][0] for p in range(params_names.size)]
-    params_values = params['value'][0]
-    params_values_list = [params_values[p] for p in range(params_values.size)]
-    return params_names_list, params_values_list
-
-
-# find all parameters matching the codename (there should be only one)
-def _find_params(x, params):
-    matching = [s for s in params if x in s]
-    assert len(matching)==1, ('Ambiguous param name found')
-    return matching
-
-
-def _match_templates(net_z, net_x, params_names_list, params_values_list):
+def _match_templates(net_z, net_x, params_names_list, params_values_list, istrain):
     # finalize network
     # z, x are [B, H, W, C]
     net_z = tf.transpose(net_z, perm=[1,2,0,3])
@@ -157,15 +110,6 @@ def _match_templates(net_z, net_x, params_names_list, params_values_list):
     net_final = tf.expand_dims(tf.reduce_sum(net_final, axis=3), axis=3)
     # final is [B, Hf, Wf, 1]
     if _bnorm_adjust:
-        bn_beta = params_values_list[params_names_list.index('fin_adjust_bnb')]
-        bn_gamma = params_values_list[params_names_list.index('fin_adjust_bnm')]
-        bn_moments = params_values_list[params_names_list.index('fin_adjust_bnx')]
-        bn_moving_mean = bn_moments[:,0]
-        bn_moving_variance = bn_moments[:,1]**2
-        net_final = tf.layers.batch_normalization(net_final, beta_initializer=tf.constant_initializer(bn_beta),
-                                                gamma_initializer=tf.constant_initializer(bn_gamma),
-                                                moving_mean_initializer=tf.constant_initializer(bn_moving_mean),
-                                                moving_variance_initializer=tf.constant_initializer(bn_moving_variance),
-                                                training=False, trainable=False)
+        net_final = tf.layers.batch_normalization(net_final, training=istrain, trainable=True)
 
     return net_final
