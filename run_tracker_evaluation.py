@@ -23,6 +23,9 @@ def main():
     # build TF graph once for all
     filename, image, templates_z, scores = siam.build_tracking_graph(final_score_sz, design, env)
 
+    print(tf.shape(templates_z))
+    print(tf.shape(scores))
+
     # iterate through all videos of evaluation.dataset
     if evaluation.video == 'all':
         dataset_folder = os.path.join(env.root_dataset, evaluation.dataset)
