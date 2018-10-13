@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bb12d94-a1ea-4e05-a217-a0f9463fb2bc" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/run_tracker_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_tracker_evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/siamese.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/siamese.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -110,7 +109,7 @@
         <entry file="file://$PROJECT_DIR$/src/tracker.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="211">
-              <caret line="20" column="13" lean-forward="true" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+              <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -144,7 +143,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="85" />
     <option name="y" value="5" />
     <option name="width" value="1400" />
@@ -239,7 +238,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
+    <frame x="-7" y="-7" width="2062" height="1126" extended-state="7" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10429142" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -295,7 +294,7 @@
     <entry file="file://$PROJECT_DIR$/src/tracker.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
-          <caret line="20" column="13" lean-forward="true" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
         </state>
       </provider>
     </entry>
